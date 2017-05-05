@@ -5,5 +5,9 @@ This is a small set of tests to check your understanding of defining models usin
 ## Setup
 
 - These tests require a database called `sequelize_practice`, so be sure to set that up before getting started. Feel free to use `psql` or your favorite Postgres GUI.
-- `npm i[install] or yarn [install]` to pull in the package's dependencies. You shouldn't need to install any others to pass the tests.
+- `npm i[install]` or `yarn [install]` to pull in the package's dependencies. You shouldn't need to install any others to pass the tests.
 - `npm t[est]` to run all the tests in "watch" mode.
+
+## Getting Started
+
+Write all your code in models/user.js. The scaffolding has been provided for you.
