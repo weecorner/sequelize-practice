@@ -11,12 +11,16 @@ describe('User model', function () {
   let user;
   beforeEach(function () {
     bio = 'Once upon a time I knew nothing of databases. Today, I dream in SQL and experience the world through tables and rows. I\'m currently a single entity but I\'m looking for someone else to JOIN me in a RELATIONship. If you enjoy puns as much as I do, send me a query and we can SELECT a time to meet.'
-    user = User.build({
-      first: 'DB',
-      last: 'Admin',
-      age: 42,
-      email: 'dbAdmin@company.com',
-      bio: bio
+
+    return User.sync({ force: true })
+    .then(function () {
+      user = User.build({
+        first: 'DB',
+        last: 'Admin',
+        age: 42,
+        email: 'dbAdmin@company.com',
+        bio: bio
+      });
     });
   });
 
@@ -33,12 +37,22 @@ describe('User model', function () {
     });
 
     it('requires `email`', function () {
-      delete user.email;
+      user.email = null;
 
       return user.validate()
       .then(function (err) {
         expect(err).to.be.an.instanceOf(Error);
-        expect(err.message).to.contain('content cannot be null');
+        expect(err.message).to.contain('email cannot be null');
+      });
+    });
+
+    it('age must be at least 18', function () {
+      user.age = 17;
+
+      return user.validate()
+      .then(function (err) {
+        expect(err).to.be.an.instanceOf(Error);
+        expect(err.message).to.contain('Validation min failed');
       });
     });
 
@@ -64,8 +78,22 @@ describe('User model', function () {
 
       it('the returned promise resolves to the user\'s new age', function () {
         return user.haveBirthday()
-        .then(function (newAge) {
-          expect(newAge).to.be(43);
+        .then(function (olderUser) {
+          expect(olderUser.age).to.equal(43);
+        });
+      });
+
+      it('saves the user\'s new age', function () {
+        return user.haveBirthday()
+        .then(function () {
+          return User.findOne({
+            where: {
+              first: 'DB'
+            }
+          });
+        })
+        .then(function (foundUser) {
+          expect(foundUser.age).to.equal(43);
         });
       });
 
